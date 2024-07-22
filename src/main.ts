@@ -158,13 +158,41 @@ const startGame = () => {
   game.sound.pauseOnBlur = false;
 };
 
+import { allAbilities, initAbilities } from "./data/ability";
+import { allMoves, initMoves } from "./data/move";
+import { allSpecies, initSpecies } from "./data/pokemon-species";
+import { download } from "./download";
+
+/**
+ * This method will download files containing the data structures used by the game.
+ * If you want to grab more data, try to follow the below pattern:
+ * 1. Initialize data
+ * 2. Call the download method, using a unique file name and the "all" data structure
+ */
+const exportData = () => {
+  initAbilities();
+  initMoves();
+  initSpecies();
+  download("~/abilities.json", JSON.stringify(allAbilities, null, 2));
+  download("~/moves.json", JSON.stringify(allMoves, null, 2));
+  download("~/species.json", JSON.stringify(allSpecies, null, 2));
+};
+
 fetch("/manifest.json")
   .then(res => res.json())
   .then(jsonResponse => {
+    /**
+     * Export data before starting the game.
+     */
+    exportData();
     startGame();
     game["manifest"] = jsonResponse.manifest;
   }).catch(() => {
     // Manifest not found (likely local build)
+    /**
+     * Export data before starting the game.
+     */
+    exportData();
     startGame();
   });
 
